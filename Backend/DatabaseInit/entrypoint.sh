@@ -17,14 +17,13 @@ done
 
 echo "SQL Server is up. Executing scripts..."
 
-# Execute each SQL script
+# Execute each SQL script in order of numeric value in their name
 # Assuming /var/opt/mssql/scripts/ is the new script directory
-for script in ./scripts/*.sql
+for script in $(ls /var/opt/mssql/scripts/*.sql | sort)
 do
     echo "Executing script: $script"
     /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'Passw0rd!' -i "$script"
 done
-
 
 # Keep the process running
 wait $!

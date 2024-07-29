@@ -11,11 +11,12 @@ EXPOSE 1433
 # Set a working directory within an allowed path
 WORKDIR /var/opt/mssql
 
-COPY --chmod=755 entrypoint.sh ./scripts/
-COPY ./*.sql ./scripts/
+# Copy entrypoint script and SQL files
+COPY --chmod=755 entrypoint.sh /var/opt/mssql/scripts/
+COPY ./SQLFiles/*.sql /var/opt/mssql/scripts/
 
 # Use the entrypoint script to initialize the database
-ENTRYPOINT ["/bin/bash", "./scripts/entrypoint.sh"]
+ENTRYPOINT ["/bin/bash", "/var/opt/mssql/scripts/entrypoint.sh"]
 
 # docker build -t my-mssql-image .
 # docker run -d --name my-mssql-container -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Passw0rd!' -p 1433:1433 my-mssql-image
