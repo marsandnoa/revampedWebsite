@@ -17,13 +17,26 @@ done
 
 echo "SQL Server is up. Executing scripts..."
 
-# Execute each SQL script in order of numeric value in their name
-# Assuming /var/opt/mssql/scripts/ is the new script directory
-for script in $(ls /var/opt/mssql/scripts/*.sql | sort)
-do
-    echo "Executing script: $script"
-    /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'Passw0rd!' -i "$script"
-done
+# List and execute each SQL script in order of numeric value in their name
+# Assuming /var/opt/mssql/scripts/ is the script directory
+
+SCRIPT_DIR="/var/opt/mssql/scripts"
+
+if [ -d "$SCRIPT_DIR" ]; then
+    echo "Scripts directory exists. Listing scripts:"
+    ls "$SCRIPT_DIR"
+    
+    for script in $(ls "$SCRIPT_DIR"/*.sql | sort); do
+        echo "Executing script: $script"
+        /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'Passw0rd!' -i "$script" || {
+            echo "Error executing script: $script"
+            exit 1
+        }
+    done
+else
+    echo "Directory $SCRIPT_DIR does not exist."
+    exit 1
+fi
 
 # Keep the process running
 wait $!

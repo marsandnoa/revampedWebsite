@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/mssql/server:2019-latest
 
 # Accept the EULA and set the SA password
 ENV ACCEPT_EULA=Y
-ENV SA_PASSWORD='Passw0rd!'
+ENV SA_PASSWORD=Passw0rd!
 
 # Expose the SQL Server port
 EXPOSE 1433
@@ -11,9 +11,21 @@ EXPOSE 1433
 # Set a working directory within an allowed path
 WORKDIR /var/opt/mssql
 
-# Copy entrypoint script and SQL files
-COPY --chmod=755 entrypoint.sh /var/opt/mssql/scripts/
+# Switch to root user to set permissions
+USER root
+
+# Create the scripts directory
+RUN mkdir -p /var/opt/mssql/scripts
+
+# Copy entrypoint script and set permissions
+COPY entrypoint.sh /var/opt/mssql/scripts/
+# Copy SQL files
 COPY ./SQLFiles/*.sql /var/opt/mssql/scripts/
+
+RUN chmod +x /var/opt/mssql/scripts/entrypoint.sh
+
+# Switch back to the default user
+USER mssql
 
 # Use the entrypoint script to initialize the database
 ENTRYPOINT ["/bin/bash", "/var/opt/mssql/scripts/entrypoint.sh"]
