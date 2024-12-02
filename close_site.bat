@@ -8,13 +8,11 @@ REM Removing all stopped Docker containers
 echo Removing all stopped Docker containers...
 for /f "tokens=*" %%i in ('docker ps -a -q') do docker rm %%i
 
-REM Stop Flask application
-echo Stopping Flask application...
-taskkill /IM python.exe /F
+REM Terminating the Gradle application
+echo Terminating the Gradle application...
+for /f "tokens=5" %%i in ('netstat -ano ^| findstr ":8080"') do taskkill /F /PID %%i
 
-REM Stop React development server
-echo Stopping React development server...
-taskkill /IM node.exe /F
+echo All services stopped.
 
 echo All services stopped.
 
